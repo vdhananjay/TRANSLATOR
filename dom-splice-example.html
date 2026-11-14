@@ -1,0 +1,2856 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="application-version" content="2.0.0">
+  <title>DOM Elements and Array Splice | v2.0.0</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: #202044;
+      background: #f2f4ff;
+      font-synthesis: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 3rem 1.25rem;
+      background:
+        radial-gradient(ellipse at 10% 5%, #e0dcff 0, transparent 34rem),
+        radial-gradient(ellipse at 95% 30%, #d7f8f0 0, transparent 30rem),
+        #f6f7ff;
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(100%, 900px);
+      margin: 0 auto;
+    }
+
+    .hero {
+      margin-bottom: 1.5rem;
+      padding: clamp(1.5rem, 5vw, 3rem);
+      border-radius: 1.5rem;
+      color: #fff;
+      background: linear-gradient(125deg, #5538c9, #8148d9 55%, #bb4cbb);
+      box-shadow: 0 16px 36px #5638c933;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.4rem;
+      color: #e2d8ff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+      font-size: clamp(2rem, 6vw, 3.1rem);
+      line-height: 1.1;
+    }
+
+    h2 {
+      margin-bottom: 0.35rem;
+      color: #3f2e91;
+      font-size: 1.45rem;
+    }
+
+    .hero p:last-child,
+    .card > p:last-child {
+      margin-bottom: 0;
+    }
+
+    .hero p:last-child {
+      max-width: 650px;
+      color: #f0eaff;
+    }
+
+    .card {
+      margin-top: 1.25rem;
+      padding: clamp(1.25rem, 4vw, 2rem);
+      border: 1px solid #e2e4f4;
+      border-radius: 1.25rem;
+      background: #fff;
+      box-shadow: 0 10px 28px #31366512;
+    }
+
+    .auth-card {
+      width: min(100%, 600px);
+      margin: 2rem auto;
+    }
+
+    .auth-form {
+      display: grid;
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .auth-form label {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .auth-form input {
+      width: 100%;
+    }
+
+    .auth-actions {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .auth-switch,
+    .auth-divider,
+    .auth-user {
+      margin: 1rem 0 0;
+    }
+
+    .auth-switch button {
+      padding: 0;
+      color: #5435af;
+      background: transparent;
+      text-decoration: underline;
+    }
+
+    .auth-divider {
+      color: #62627e;
+      text-align: center;
+    }
+
+    .auth-message {
+      min-height: 1.6em;
+      margin: 0.75rem 0 0;
+      color: #4b4970;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .auth-message[data-state="error"] {
+      color: #bd344d;
+    }
+
+    .auth-message[data-state="success"] {
+      color: #137b62;
+    }
+
+    .auth-config-notice {
+      padding: 0.85rem 1rem;
+      border-radius: 0.75rem;
+      background: #fff3d9;
+      color: #704a05;
+      overflow-wrap: anywhere;
+    }
+
+    .auth-account {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+    }
+
+    .auth-account button {
+      background: #e45b70;
+    }
+
+    .guest-note {
+      margin: 0.75rem 0 0;
+      color: #62627e;
+      font-size: 0.95rem;
+    }
+
+    .card-intro {
+      margin-bottom: 1.25rem;
+      color: #62627e;
+    }
+
+    .paragraph-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+      gap: 0.85rem;
+    }
+
+    .paragraph {
+      min-height: 90px;
+      margin: 0;
+      padding: 1rem 1.1rem;
+      border: 0;
+      border-radius: 0.9rem;
+      color: #372179;
+      background: #eee9ff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      box-shadow: inset 4px 0 #8456e8;
+    }
+
+    .paragraph:nth-child(even) {
+      color: #145a52;
+      background: #def8f1;
+      box-shadow: inset 4px 0 #21aa8a;
+    }
+
+    .paragraph.is-scrolling {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .scrolling-text {
+      display: inline-block;
+      min-width: 100%;
+      animation: scroll-text 12s linear infinite;
+    }
+
+    @keyframes scroll-text {
+      from {
+        transform: translateX(100%);
+      }
+
+      to {
+        transform: translateX(-100%);
+      }
+    }
+
+    .controls,
+    .calculator-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .voice-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 0.85rem;
+      background: #f5f2ff;
+    }
+
+    .voice-controls p {
+      flex-basis: 100%;
+      margin: 0;
+    }
+
+    #voice-status[data-state="error"] {
+      color: #bd344d;
+    }
+
+    #voice-status[data-state="listening"] {
+      color: #137b62;
+    }
+
+    .text-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 0.85rem;
+      margin-top: 1.25rem;
+    }
+
+    .text-field {
+      display: grid;
+      gap: 0.45rem;
+      padding: 1rem;
+      border-radius: 0.85rem;
+      background: #f5f2ff;
+    }
+
+    .text-field input,
+    .text-field select {
+      width: 100%;
+    }
+
+    .text-field button {
+      justify-self: start;
+    }
+
+    button {
+      min-height: 44px;
+      padding: 0.65rem 1rem;
+      border: 0;
+      border-radius: 0.7rem;
+      color: #fff;
+      background: #6544cf;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    button:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid #ffbe55;
+      outline-offset: 3px;
+    }
+
+    #remove-button {
+      background: #e45b70;
+    }
+
+    input {
+      width: min(100%, 10rem);
+      min-height: 44px;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid #c9c7e5;
+      border-radius: 0.65rem;
+      background: #fbfaff;
+      color: #202044;
+      font: inherit;
+    }
+
+    select {
+      min-height: 44px;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid #c9c7e5;
+      border-radius: 0.65rem;
+      background: #fbfaff;
+      color: #202044;
+      font: inherit;
+    }
+
+    label {
+      color: #4b4970;
+      font-weight: 700;
+    }
+
+    .index-readout,
+    .result {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 0.75rem;
+      background: #fff3d9;
+      color: #704a05;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .calculator-card {
+      border-top: 5px solid #20b88a;
+    }
+
+    .calculator-card h2 {
+      color: #137b62;
+    }
+
+    .calculator-card button {
+      background: #159b78;
+    }
+
+    .result {
+      background: #ddf8ee;
+      color: #105f4c;
+    }
+
+    .console-card {
+      border-top: 5px solid #f2aa38;
+    }
+
+    .scrabble-card {
+      border-top: 5px solid #6544cf;
+    }
+
+    .game-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .game-stat {
+      min-width: 120px;
+      padding: 0.65rem 0.9rem;
+      border-radius: 0.75rem;
+      background: #f0edff;
+      color: #5435af;
+      font-weight: 700;
+    }
+
+    .tile-rack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      min-height: 68px;
+      align-items: center;
+      padding: 0.8rem;
+      border: 2px dashed #c9c0ef;
+      border-radius: 0.9rem;
+      background: #faf9ff;
+    }
+
+    .tile {
+      position: relative;
+      display: grid;
+      width: 52px;
+      height: 52px;
+      place-items: center;
+      padding: 0 0 0.2rem;
+      border: 1px solid #d5b56c;
+      border-radius: 0.6rem;
+      background: linear-gradient(145deg, #fff4cf, #f4d98f);
+      color: #513c16;
+      box-shadow: 0 3px 0 #c5a65e;
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .tile:hover {
+      filter: brightness(1.03);
+    }
+
+    .tile:disabled {
+      opacity: 0.42;
+      cursor: default;
+      transform: none;
+    }
+
+    .tile-points {
+      position: absolute;
+      right: 5px;
+      bottom: 1px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .word-preview {
+      min-height: 3.25rem;
+      margin: 1rem 0 0.5rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 0.7rem;
+      background: #e8f8f2;
+      color: #105f4c;
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      overflow-wrap: anywhere;
+    }
+
+    .game-message {
+      min-height: 1.6em;
+      margin: 0.75rem 0 0;
+      color: #4b4970;
+      font-weight: 700;
+    }
+
+    .game-message[data-state="error"] {
+      color: #bd344d;
+    }
+
+    .game-message[data-state="success"] {
+      color: #137b62;
+    }
+
+    .translator-card {
+      border-top: 5px solid #5538c9;
+    }
+
+    .translator-card h2 {
+      color: #4930ad;
+    }
+
+    .translator-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 1rem;
+    }
+
+    .translator-fields label {
+      display: grid;
+      gap: 0.4rem;
+      color: #4b4970;
+      font-weight: 700;
+    }
+
+    .translator-card textarea,
+    .translator-card select {
+      width: 100%;
+      padding: 0.8rem 0.9rem;
+      border: 1px solid #d5d7e8;
+      border-radius: 0.75rem;
+      color: #202044;
+      background: #fff;
+      font: inherit;
+    }
+
+    .translator-card textarea {
+      min-height: 9rem;
+      resize: vertical;
+    }
+
+    .translator-card textarea:focus-visible,
+    .translator-card select:focus-visible {
+      outline: 3px solid #8456e8;
+      outline-offset: 2px;
+    }
+
+    .translator-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.85rem;
+    }
+
+    .translator-controls button {
+      background: #5538c9;
+    }
+
+    .translator-controls button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .translator-count,
+    .translator-note {
+      margin: 0.75rem 0 0;
+      color: #62627e;
+      font-size: 0.92rem;
+    }
+
+    .translator-result {
+      margin-top: 1.25rem;
+    }
+
+    .translation-output {
+      min-height: 9rem;
+      margin-top: 0.4rem;
+      padding: 0.8rem 0.9rem;
+      border: 1px solid #d5d7e8;
+      border-radius: 0.75rem;
+      color: #202044;
+      background: #fff;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      user-select: text;
+    }
+
+    .translation-output:empty::before {
+      color: #77778d;
+      content: attr(data-placeholder);
+    }
+
+    .live-translation-output {
+      min-height: 3.5rem;
+      margin-top: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-left: 4px solid #159b78;
+      border-radius: 0.5rem;
+      background: #e8f8f2;
+      color: #105f4c;
+      font-size: 1.15rem;
+      font-weight: 700;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .live-translation-output span {
+      display: inline-block;
+      min-width: 100%;
+      animation: live-translation-scroll 16s linear infinite;
+    }
+
+    @keyframes live-translation-scroll {
+      from {
+        transform: translateX(100%);
+      }
+
+      to {
+        transform: translateX(-100%);
+      }
+    }
+
+    .live-translation-status {
+      min-height: 1.6em;
+      margin: 0.65rem 0 0;
+      color: #4b4970;
+      font-weight: 700;
+    }
+
+    .live-translation-status[data-state="error"] {
+      color: #bd344d;
+    }
+
+    .live-translation-status[data-state="success"] {
+      color: #137b62;
+    }
+
+    .translation-word {
+      display: inline-block;
+      animation: translation-word-reveal 450ms ease-out both;
+      animation-delay: var(--word-delay);
+    }
+
+    @keyframes translation-word-reveal {
+      from {
+        opacity: 0;
+        transform: translateY(0.35em);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .translator-status {
+      min-height: 1.6em;
+      margin: 0.75rem 0 0;
+      color: #4b4970;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .translator-status[data-state="error"] {
+      color: #bd344d;
+    }
+
+    .translator-status[data-state="success"] {
+      color: #137b62;
+    }
+
+    .celebration-graphics {
+      position: relative;
+      display: none;
+      height: 4.5rem;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+
+    .celebration-graphics.is-active {
+      display: block;
+    }
+
+    .celebration-emoji {
+      position: absolute;
+      top: 50%;
+      left: var(--x);
+      font-size: 2rem;
+      animation: cheer-pop 1.8s ease-out var(--delay) both;
+    }
+
+    @keyframes cheer-pop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 12px) scale(0.5) rotate(-18deg);
+      }
+
+      25%,
+      65% {
+        opacity: 1;
+        transform: translate(-50%, -12px) scale(1.15) rotate(8deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -30px) scale(0.8) rotate(18deg);
+      }
+    }
+
+    ul {
+      margin-bottom: 0;
+      padding-left: 1.3rem;
+      color: #4b4970;
+    }
+
+    li + li {
+      margin-top: 0.45rem;
+    }
+
+    code {
+      padding: 0.18rem 0.4rem;
+      border-radius: 0.35rem;
+      background: #f0edff;
+      color: #5435af;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 1.25rem 0.85rem;
+      }
+
+      .controls,
+      .calculator-controls {
+        align-items: stretch;
+      }
+
+      .controls button,
+      .calculator-controls button {
+        flex: 1 1 40%;
+      }
+
+      .number-field {
+        display: grid;
+        width: 100%;
+        gap: 0.35rem;
+      }
+
+      .number-field input {
+        width: 100%;
+      }
+
+      .controls > label,
+      .controls > input,
+      .controls > select {
+        flex: 1 1 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scrolling-text {
+        animation: none;
+        white-space: normal;
+      }
+
+      .celebration-emoji {
+        animation: none;
+      }
+
+      .translation-word {
+        animation: none;
+      }
+
+      .live-translation-output {
+        white-space: normal;
+      }
+
+      .live-translation-output span {
+        min-width: 0;
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="auth-view" class="card auth-card" aria-labelledby="auth-heading">
+    <h1 id="auth-heading">Sign in</h1>
+    <p id="auth-config-notice" class="auth-config-notice">
+      Add your Firebase web app configuration in the page's authentication script to enable account access.
+    </p>
+
+    <form id="login-form" class="auth-form" hidden>
+      <label for="login-email">Email
+        <input id="login-email" name="email" type="email" autocomplete="email" required>
+      </label>
+      <label for="login-password">Password
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="auth-control" type="submit">Sign in</button>
+      <p class="auth-switch">New here? <button type="button" data-auth-mode="register">Create an account</button></p>
+    </form>
+
+    <form id="registration-form" class="auth-form" hidden>
+      <label for="register-name">Name
+        <input id="register-name" name="name" type="text" autocomplete="name" maxlength="100" required>
+      </label>
+      <label for="register-email">Email
+        <input id="register-email" name="email" type="email" autocomplete="email" required>
+      </label>
+      <label for="register-telephone">Telephone
+        <input id="register-telephone" name="telephone" type="tel" autocomplete="tel" maxlength="30" required>
+      </label>
+      <label for="register-mobile">Mobile
+        <input id="register-mobile" name="mobile" type="tel" autocomplete="tel-national" maxlength="30" required>
+      </label>
+      <label for="register-password">Password (at least 8 characters)
+        <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+      </label>
+      <button class="auth-control" type="submit">Register</button>
+      <p class="auth-switch">Already have an account? <button type="button" data-auth-mode="login">Sign in</button></p>
+    </form>
+
+    <div id="verification-panel" hidden>
+      <p id="verification-email"></p>
+      <p>Check your inbox and verify your email address before continuing.</p>
+      <div class="auth-actions">
+        <button id="resend-verification" class="auth-control" type="button">Resend confirmation email</button>
+        <button id="check-verification" class="auth-control" type="button">I verified my email</button>
+        <button id="verification-logout" class="auth-control" type="button">Sign out</button>
+      </div>
+    </div>
+
+    <form id="profile-form" class="auth-form" hidden>
+      <p>Complete your contact details to finish setting up your account.</p>
+      <label for="profile-name">Name
+        <input id="profile-name" name="name" type="text" autocomplete="name" maxlength="100" required>
+      </label>
+      <label for="profile-telephone">Telephone
+        <input id="profile-telephone" name="telephone" type="tel" autocomplete="tel" maxlength="30" required>
+      </label>
+      <label for="profile-mobile">Mobile
+        <input id="profile-mobile" name="mobile" type="tel" autocomplete="tel-national" maxlength="30" required>
+      </label>
+      <button class="auth-control" type="submit">Save contact details</button>
+      <button id="profile-logout" class="auth-control" type="button">Sign out</button>
+    </form>
+
+    <div id="sso-actions" class="auth-actions" hidden>
+      <p class="auth-divider">Or sign in with</p>
+      <button id="google-sign-in" class="auth-control" type="button">Continue with Google</button>
+      <button id="github-sign-in" class="auth-control" type="button">Continue with GitHub</button>
+    </div>
+    <div class="auth-actions">
+      <p class="auth-divider">Or try the app without an account</p>
+      <button id="guest-button" type="button">Continue as guest</button>
+      <p class="guest-note">Guest activity is temporary and will not be saved. It disappears when you exit or reload.</p>
+    </div>
+    <p id="auth-message" class="auth-message" role="status" aria-live="polite"></p>
+  </section>
+
+  <main id="app-content" hidden>
+    <header class="hero">
+      <p class="eyebrow">JavaScript playground · v2.0.0</p>
+      <h1>DOM Elements &amp; Array Splice</h1>
+      <p>Explore DOM elements, a simple calculator, and a mini word game built with JavaScript classes and arrays.</p>
+      <div class="auth-account">
+        <span id="account-email">Guest session — changes are not saved</span>
+        <button id="logout-button" type="button">Log out</button>
+      </div>
+    </header>
+
+    <section class="card" aria-labelledby="dom-heading">
+      <h2 id="dom-heading">Paragraphs in the DOM</h2>
+      <p class="card-intro">
+        Each paragraph is a DOM element. The JavaScript array
+        <code>paragraphElements</code> tracks their order, starting at index 0.
+      </p>
+      <div id="paragraph-list" class="paragraph-list" aria-label="Sample paragraphs">
+        <p id="p1" class="paragraph">P1: First paragraph</p>
+        <p id="p2" class="paragraph">P2: Second paragraph</p>
+      </div>
+      <div class="controls">
+        <label for="insert-text">Text to insert</label>
+        <input id="insert-text" type="text" value="A new paragraph" aria-label="Text to insert at index 1">
+        <label for="insert-mode">Display style</label>
+        <select id="insert-mode">
+          <option value="static">Static text</option>
+          <option value="scrolling">Scrolling text</option>
+        </select>
+        <button id="insert-button" type="button">＋ Insert at index 1</button>
+        <button id="remove-button" type="button">− Remove at index 1</button>
+      </div>
+      <div class="text-options" aria-label="Edit the first and second paragraph text">
+        <div class="text-field">
+          <label for="p1-text">Static text for P1</label>
+          <input id="p1-text" type="text" value="P1: First paragraph">
+          <button type="button" data-update-paragraph="p1">Update P1</button>
+        </div>
+        <div class="text-field">
+          <label for="p2-text">Static text for P2</label>
+          <input id="p2-text" type="text" value="P2: Second paragraph">
+          <button type="button" data-update-paragraph="p2">Update P2</button>
+        </div>
+      </div>
+      <p id="indexes" class="index-readout" aria-live="polite"></p>
+      <div class="voice-controls">
+        <button id="voice-start" type="button">Start voice control</button>
+        <button id="voice-stop" type="button" disabled>Stop voice control</button>
+        <p id="voice-status" role="status" aria-live="polite">Voice control is off.</p>
+        <p>Speak commands in English: “insert paragraph at index 1 saying Hello”, “remove paragraph at index 1”, or “update paragraph at index 0 to Welcome”. You can also say “translate Hello to Kannada”, “open Google”, “open example dot com”, “search the web for cats”, or “refresh page”.</p>
+        <p>Speech recognition uses the browser service and may process audio online. This page does not store recordings.</p>
+      </div>
+    </section>
+
+    <section class="card calculator-card" aria-labelledby="calculator-heading">
+      <h2 id="calculator-heading">Simple calculator</h2>
+      <p class="card-intro">Enter two numbers, then choose an operation.</p>
+      <div class="calculator-controls">
+        <div class="number-field">
+          <label for="number-a">First number</label>
+          <input id="number-a" type="number" step="any" value="8">
+        </div>
+        <div class="number-field">
+          <label for="number-b">Second number</label>
+          <input id="number-b" type="number" step="any" value="2">
+        </div>
+      </div>
+      <div class="calculator-controls">
+      <button type="button" data-operation="add">Add</button>
+      <button type="button" data-operation="subtract">Subtract</button>
+      <button type="button" data-operation="multiply">Multiply</button>
+      <button type="button" data-operation="divide">Divide</button>
+      </div>
+      <p id="calculator-result" class="result" aria-live="polite">Your answer will appear here ✨</p>
+    </section>
+
+    <section class="card scrabble-card" aria-labelledby="scrabble-heading">
+      <h2 id="scrabble-heading">Word Tile Challenge</h2>
+      <p class="card-intro">
+        Pick letters from your rack to spell a word. Valid words score the sum of their letter values.
+        Add your own words to the game dictionary and see class inheritance in action.
+      </p>
+      <div class="game-stats" aria-label="Game statistics">
+        <div class="game-stat">Score: <span id="game-score">0</span></div>
+        <div class="game-stat">Tiles left: <span id="tiles-left">0</span></div>
+      </div>
+      <div id="celebration-graphics" class="celebration-graphics" aria-hidden="true"></div>
+      <p id="game-message" class="game-message" role="status" aria-live="polite">Choose letters to make a word.</p>
+      <div id="tile-rack" class="tile-rack" aria-label="Your letter tiles"></div>
+      <p id="word-preview" class="word-preview" aria-live="polite">Your word will appear here</p>
+      <div class="controls">
+        <button id="undo-tile-button" type="button">Undo last tile</button>
+        <button id="clear-word-button" type="button">Clear word</button>
+        <button id="submit-word-button" type="button">Submit word</button>
+        <button id="new-game-button" type="button">New game</button>
+      </div>
+      <div class="text-options" aria-label="Add a word to the game dictionary">
+        <div class="text-field">
+          <label for="custom-word">New word (2–8 letters)</label>
+          <input id="custom-word" type="text" maxlength="8" pattern="[A-Za-z]{2,8}" placeholder="Example: STAR">
+        </div>
+        <div class="text-field">
+          <label for="custom-definition">Definition</label>
+          <input id="custom-definition" type="text" maxlength="120" placeholder="What does the word mean?">
+          <button id="add-word-button" type="button">Add word</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card translator-card" aria-labelledby="translator-heading">
+      <h2 id="translator-heading">English translator</h2>
+      <p class="card-intro">
+        Translate free text from English to French, Telugu, Spanish, Hindi, Sanskrit, Kannada, Tamil, Marathi, or Punjabi.
+        Enter up to 10,000 characters.
+      </p>
+      <div class="translator-fields">
+        <label for="translation-source">
+          English text
+          <textarea id="translation-source" maxlength="10000" placeholder="Type or paste text to translate..." autocomplete="off"></textarea>
+        </label>
+        <label for="translation-language">
+          Translate to
+          <select id="translation-language">
+            <option value="fr">French</option>
+            <option value="te">Telugu</option>
+            <option value="es">Spanish</option>
+            <option value="hi">Hindi</option>
+            <option value="sa">Sanskrit</option>
+            <option value="kn">Kannada</option>
+            <option value="ta">Tamil</option>
+            <option value="mr">Marathi</option>
+            <option value="pa">Punjabi</option>
+          </select>
+        </label>
+      </div>
+      <div class="translator-controls">
+        <button id="dictate-translation-button" type="button">Speak English text</button>
+        <button id="stop-dictation-button" type="button" disabled>Stop dictation</button>
+        <span id="dictation-status" role="status" aria-live="polite">Type text or use voice input.</span>
+      </div>
+      <div class="translator-controls">
+        <button id="translate-button" type="button">Translate</button>
+        <button id="speak-translation-button" type="button" disabled>Play translation audio</button>
+        <button id="stop-translation-audio-button" type="button" disabled>Stop audio</button>
+        <span id="translation-count" class="translator-count" aria-live="polite">0 / 10,000</span>
+      </div>
+      <div class="text-field">
+        <h3>Live conversation translation · v2.0</h3>
+        <p>Stream spoken English into the selected language. Interim speech is translated automatically.</p>
+        <div class="translator-controls">
+          <button id="start-live-translation" type="button">Start live translation</button>
+          <button id="stop-live-translation" type="button" disabled>Stop live translation</button>
+        </div>
+        <div id="live-translation-output" class="live-translation-output" aria-live="polite" aria-label="Live translated speech"></div>
+        <p id="live-translation-status" class="live-translation-status" role="status" aria-live="polite">Live translation is off.</p>
+      </div>
+      <p class="translator-note">
+        Translation and fallback audio use Google's free, unofficial services; availability and language support may vary.
+        Live mode sends recognized speech text to the translation service. Speech recognition may process audio online.
+        Do not submit sensitive or confidential text. Audio may use browser speech synthesis or Google's audio service.
+      </p>
+      <div class="translator-result">
+        <h3>Translation</h3>
+        <div id="translation-output" class="translation-output" data-placeholder="Your translation will appear here."></div>
+      </div>
+      <p id="translation-status" class="translator-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card console-card" aria-labelledby="console-heading">
+      <h2 id="console-heading">Try it in the browser console</h2>
+      <ul>
+        <li><code>domElements.p1</code> gets the P1 DOM element.</li>
+        <li><code>paragraphElements[1]</code> gets the element at index 1.</li>
+        <li><code>spliceParagraphs(1, 1)</code> removes the element at index 1.</li>
+        <li><code>spliceParagraphs(1, 0, createParagraph("New paragraph"))</code> inserts at index 1.</li>
+        <li><code>insertParagraphAt</code>, <code>removeParagraphAt</code>, and <code>updateParagraphAt</code> are shared by the voice commands and the page controls.</li>
+        <li><code>runVoiceCommand("insert paragraph at index 1 saying Hello")</code> runs a voice command from the browser console.</li>
+        <li>Calculate with <code>add(8, 2)</code>, <code>subtract(8, 2)</code>, <code>multiply(8, 2)</code>, or <code>divide(8, 2)</code>.</li>
+        <li><code>ScrabbleWordGame</code> inherits the shared word-list behavior from <code>WordGame</code>.</li>
+        <li>Use <code>scrabbleGame.addWord("NEW", "Recently made or discovered.")</code> to extend its dictionary.</li>
+        <li>The word game instance and dictionary are available as <code>scrabbleGame</code> and <code>scrabbleWords</code>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const paragraphList = document.getElementById("paragraph-list");
+    const domElements = {
+      p1: document.getElementById("p1"),
+      p2: document.getElementById("p2")
+    };
+    const paragraphElements = [domElements.p1, domElements.p2];
+
+    function renderParagraphs() {
+      paragraphList.replaceChildren(...paragraphElements);
+      document.getElementById("indexes").textContent =
+        paragraphElements.map((element, index) => `${index}: ${element.textContent}`).join(" | ");
+    }
+
+    function createParagraph(text, displayMode = "static") {
+      if (displayMode !== "static" && displayMode !== "scrolling") {
+        throw new TypeError("Display mode must be static or scrolling.");
+      }
+
+      const paragraph = document.createElement("p");
+      paragraph.className = "paragraph";
+      if (displayMode === "scrolling") {
+        paragraph.classList.add("is-scrolling");
+        const scrollingText = document.createElement("span");
+        scrollingText.className = "scrolling-text";
+        scrollingText.textContent = text;
+        paragraph.append(scrollingText);
+      } else {
+        paragraph.textContent = text;
+      }
+      return paragraph;
+    }
+
+    function spliceParagraphs(start, deleteCount, ...insertedElements) {
+      if (!Number.isInteger(start) || !Number.isInteger(deleteCount) || deleteCount < 0) {
+        throw new RangeError("start and deleteCount must be integers; deleteCount cannot be negative.");
+      }
+      if (!insertedElements.every(element => element instanceof HTMLParagraphElement)) {
+        throw new TypeError("Only paragraph elements can be inserted.");
+      }
+
+      const removedElements = paragraphElements.splice(start, deleteCount, ...insertedElements);
+      renderParagraphs();
+      return removedElements;
+    }
+
+    function insertParagraphAt(index, text, displayMode = "static") {
+      if (!Number.isInteger(index) || index < 0 || index > paragraphElements.length) {
+        throw new RangeError("Insert index must be between 0 and the paragraph count.");
+      }
+      const paragraph = createParagraph(text, displayMode);
+      spliceParagraphs(index, 0, paragraph);
+      return paragraph;
+    }
+
+    function removeParagraphAt(index) {
+      if (!Number.isInteger(index) || index < 0 || index >= paragraphElements.length) {
+        return false;
+      }
+      spliceParagraphs(index, 1);
+      return true;
+    }
+
+    function updateParagraphElement(element, text) {
+      const scrollingText = element.querySelector(".scrolling-text");
+      if (scrollingText) {
+        scrollingText.textContent = text;
+      } else {
+        element.textContent = text;
+      }
+      renderParagraphs();
+    }
+
+    function updateParagraphAt(index, text) {
+      if (!Number.isInteger(index) || index < 0 || index >= paragraphElements.length) {
+        return false;
+      }
+      updateParagraphElement(paragraphElements[index], text);
+      return true;
+    }
+
+    function validateNumbers(a, b) {
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        throw new TypeError("Both arguments must be finite numbers.");
+      }
+    }
+
+    function add(a, b) {
+      validateNumbers(a, b);
+      return a + b;
+    }
+
+    function subtract(a, b) {
+      validateNumbers(a, b);
+      return a - b;
+    }
+
+    function multiply(a, b) {
+      validateNumbers(a, b);
+      return a * b;
+    }
+
+    function divide(a, b) {
+      validateNumbers(a, b);
+      if (b === 0) {
+        throw new RangeError("Cannot divide by zero.");
+      }
+      return a / b;
+    }
+
+    const calculatorOperations = { add, subtract, multiply, divide };
+
+    const scrabbleTileValues = [
+      { letter: "A", points: 1, count: 9 },
+      { letter: "B", points: 3, count: 2 },
+      { letter: "C", points: 3, count: 2 },
+      { letter: "D", points: 2, count: 4 },
+      { letter: "E", points: 1, count: 12 },
+      { letter: "F", points: 4, count: 2 },
+      { letter: "G", points: 2, count: 3 },
+      { letter: "H", points: 4, count: 2 },
+      { letter: "I", points: 1, count: 9 },
+      { letter: "J", points: 8, count: 1 },
+      { letter: "K", points: 5, count: 1 },
+      { letter: "L", points: 1, count: 4 },
+      { letter: "M", points: 3, count: 2 },
+      { letter: "N", points: 1, count: 6 },
+      { letter: "O", points: 1, count: 8 },
+      { letter: "P", points: 3, count: 2 },
+      { letter: "Q", points: 10, count: 1 },
+      { letter: "R", points: 1, count: 6 },
+      { letter: "S", points: 1, count: 4 },
+      { letter: "T", points: 1, count: 6 },
+      { letter: "U", points: 1, count: 4 },
+      { letter: "V", points: 4, count: 2 },
+      { letter: "W", points: 4, count: 2 },
+      { letter: "X", points: 8, count: 1 },
+      { letter: "Y", points: 4, count: 2 },
+      { letter: "Z", points: 10, count: 1 }
+    ];
+    const scrabbleWords = [
+      { word: "ACE", definition: "A top score or a skilled person." },
+      { word: "ACT", definition: "To do something." },
+      { word: "AGE", definition: "The length of time someone or something has lived." },
+      { word: "AIR", definition: "The invisible mixture of gases around us." },
+      { word: "ANT", definition: "A small insect that lives in a colony." },
+      { word: "ART", definition: "Creative work made with imagination." },
+      { word: "ATE", definition: "Past tense of eat." },
+      { word: "BAR", definition: "A long, narrow piece or a place to sit." },
+      { word: "BAT", definition: "A flying mammal or a piece of sports equipment." },
+      { word: "BED", definition: "A piece of furniture for sleeping." },
+      { word: "BET", definition: "To risk something on an outcome." },
+      { word: "BIG", definition: "Large in size." },
+      { word: "BIT", definition: "A small amount." },
+      { word: "BOW", definition: "A knot with loops or a bending movement." },
+      { word: "BOX", definition: "A container with flat sides." },
+      { word: "BUS", definition: "A large road vehicle for passengers." },
+      { word: "BUT", definition: "A word used to introduce a contrast." },
+      { word: "CAB", definition: "A taxi." },
+      { word: "CAN", definition: "To be able to; also, a metal container." },
+      { word: "CAR", definition: "A road vehicle with an engine." },
+      { word: "CAT", definition: "A small domesticated feline." },
+      { word: "COT", definition: "A small bed." },
+      { word: "CUP", definition: "A small container for a drink." },
+      { word: "CUT", definition: "To divide or open with a sharp edge." },
+      { word: "DAY", definition: "The time between sunrise and sunset." },
+      { word: "DEN", definition: "An animal's home or a cozy room." },
+      { word: "DIG", definition: "To break up and move earth." },
+      { word: "DOT", definition: "A small round mark." },
+      { word: "DRY", definition: "Free from moisture." },
+      { word: "DUE", definition: "Expected or owed." },
+      { word: "EAR", definition: "The part of the body used for hearing." },
+      { word: "EAT", definition: "To take food into the body." },
+      { word: "EGG", definition: "An oval food laid by a bird." },
+      { word: "END", definition: "The final part." },
+      { word: "ERA", definition: "A long and distinct period of history." },
+      { word: "FAN", definition: "A person who likes something or a device that moves air." },
+      { word: "FAR", definition: "At a great distance." },
+      { word: "FED", definition: "Given food." },
+      { word: "FIT", definition: "Healthy or the right size." },
+      { word: "FLY", definition: "To move through the air." },
+      { word: "FUN", definition: "Enjoyment or amusement." },
+      { word: "GAP", definition: "An opening or empty space." },
+      { word: "GAS", definition: "A substance that spreads to fill its container." },
+      { word: "GET", definition: "To receive or obtain." },
+      { word: "GOD", definition: "A deity." },
+      { word: "GOT", definition: "Past tense of get." },
+      { word: "GUM", definition: "A chewy substance or the tissue around teeth." },
+      { word: "GUN", definition: "A device that launches a projectile." },
+      { word: "GUT", definition: "The digestive tract." },
+      { word: "HAD", definition: "Past tense of have." },
+      { word: "HAM", definition: "Meat from a pig's leg." },
+      { word: "HAS", definition: "Owns or holds." },
+      { word: "HAT", definition: "A covering worn on the head." },
+      { word: "HEN", definition: "A female chicken." },
+      { word: "HER", definition: "A pronoun referring to a female person." },
+      { word: "HID", definition: "Past tense of hide." },
+      { word: "HIM", definition: "A pronoun referring to a male person." },
+      { word: "HIP", definition: "The side part of the body below the waist." },
+      { word: "HIS", definition: "Belonging to a male person." },
+      { word: "HIT", definition: "To strike something." },
+      { word: "HOT", definition: "Having a high temperature." },
+      { word: "HOW", definition: "In what way or manner." },
+      { word: "HUG", definition: "To hold someone closely in your arms." },
+      { word: "ICE", definition: "Frozen water." },
+      { word: "INK", definition: "Colored liquid used for writing or printing." },
+      { word: "JAM", definition: "A sweet fruit spread or a traffic blockage." },
+      { word: "JET", definition: "A fast aircraft." },
+      { word: "JOB", definition: "A task or paid position." },
+      { word: "JOY", definition: "A feeling of great happiness." },
+      { word: "KEY", definition: "A tool for opening a lock." },
+      { word: "KIT", definition: "A set of tools or supplies." },
+      { word: "LAB", definition: "A place for scientific work." },
+      { word: "LAD", definition: "A boy or young man." },
+      { word: "LAG", definition: "To fall behind." },
+      { word: "LAP", definition: "The flat area across your thighs when sitting." },
+      { word: "LAW", definition: "A rule made by an authority." },
+      { word: "LAY", definition: "To put something down." },
+      { word: "LED", definition: "Guided or showed the way." },
+      { word: "LEG", definition: "A body part used for standing and walking." },
+      { word: "LET", definition: "To allow." },
+      { word: "LID", definition: "A cover for a container." },
+      { word: "LIE", definition: "To rest flat or say something untrue." },
+      { word: "LIP", definition: "One of the edges of the mouth." },
+      { word: "LIT", definition: "Provided with light." },
+      { word: "LOT", definition: "A large number or amount." },
+      { word: "LOW", definition: "Not high." },
+      { word: "MAD", definition: "Very angry." },
+      { word: "MAN", definition: "An adult male person." },
+      { word: "MAP", definition: "A drawing that shows places." },
+      { word: "MAT", definition: "A small piece placed on a floor or surface." },
+      { word: "MET", definition: "Came together with someone." },
+      { word: "MIX", definition: "To combine things together." },
+      { word: "MOB", definition: "A large crowd." },
+      { word: "MOM", definition: "A mother." },
+      { word: "MUD", definition: "Soft, wet earth." },
+      { word: "MUG", definition: "A large cup." },
+      { word: "NAP", definition: "A short sleep." },
+      { word: "NET", definition: "A mesh used to catch things." },
+      { word: "NEW", definition: "Recently made or discovered." },
+      { word: "NOD", definition: "To lower and raise your head." },
+      { word: "NOR", definition: "A word used with neither." },
+      { word: "NOT", definition: "A word used to make something negative." },
+      { word: "NOW", definition: "At this moment." },
+      { word: "NUT", definition: "A hard-shelled seed." },
+      { word: "OAK", definition: "A large tree that produces acorns." },
+      { word: "OAR", definition: "A pole with a flat blade used to row a boat." },
+      { word: "OAT", definition: "A grain often eaten for breakfast." },
+      { word: "ODD", definition: "Unusual or not divisible by two." },
+      { word: "OFF", definition: "Away from a place or not operating." },
+      { word: "OFT", definition: "Often; many times." },
+      { word: "OLD", definition: "Having lived or existed for a long time." },
+      { word: "ONE", definition: "The number after zero." },
+      { word: "OUR", definition: "Belonging to us." },
+      { word: "OUT", definition: "Away from the inside." },
+      { word: "OWE", definition: "To be required to pay or give." },
+      { word: "OWL", definition: "A bird that is often active at night." },
+      { word: "OWN", definition: "To have something as yours." },
+      { word: "PAD", definition: "A soft cushion or a writing surface." },
+      { word: "PAL", definition: "A friend." },
+      { word: "PAN", definition: "A metal container used for cooking." },
+      { word: "PAT", definition: "A gentle tap." },
+      { word: "PAY", definition: "To give money for something." },
+      { word: "PEN", definition: "A tool for writing with ink." },
+      { word: "PET", definition: "An animal kept for companionship." },
+      { word: "PIE", definition: "A baked dish with a crust." },
+      { word: "PIG", definition: "A farm animal with a snout." },
+      { word: "PIN", definition: "A small thin piece of metal." },
+      { word: "PIT", definition: "A hole in the ground or a fruit stone." },
+      { word: "POT", definition: "A deep container used for cooking or planting." },
+      { word: "PUT", definition: "To move something to a place." },
+      { word: "RAG", definition: "A scrap of cloth." },
+      { word: "RAM", definition: "A male sheep." },
+      { word: "RAN", definition: "Moved quickly on foot." },
+      { word: "RAP", definition: "A quick knock or a kind of music." },
+      { word: "RAT", definition: "A small rodent with a long tail." },
+      { word: "RAW", definition: "Not cooked." },
+      { word: "RAY", definition: "A beam of light." },
+      { word: "RED", definition: "The color of a ripe tomato." },
+      { word: "RID", definition: "To make free of something unwanted." },
+      { word: "RIG", definition: "A set of equipment." },
+      { word: "RIP", definition: "To tear something." },
+      { word: "ROB", definition: "To take something unlawfully." },
+      { word: "ROD", definition: "A thin straight bar." },
+      { word: "ROT", definition: "To decay." },
+      { word: "ROW", definition: "A line of things or to move a boat with oars." },
+      { word: "RUB", definition: "To press and move your hand over something." },
+      { word: "RUG", definition: "A small carpet." },
+      { word: "RUM", definition: "A drink made from sugarcane." },
+      { word: "RUN", definition: "To move quickly on foot." },
+      { word: "SAD", definition: "Feeling unhappy." },
+      { word: "SAP", definition: "Liquid inside a plant." },
+      { word: "SAT", definition: "Past tense of sit." },
+      { word: "SAW", definition: "A tool for cutting or past tense of see." },
+      { word: "SAY", definition: "To speak words." },
+      { word: "SEA", definition: "A large body of salt water." },
+      { word: "SEE", definition: "To notice with your eyes." },
+      { word: "SET", definition: "To put something in a place." },
+      { word: "SEW", definition: "To join fabric with thread." },
+      { word: "SHE", definition: "A pronoun referring to a female person." },
+      { word: "SHY", definition: "Nervous around other people." },
+      { word: "SIP", definition: "To drink a small amount." },
+      { word: "SIT", definition: "To rest with your body supported." },
+      { word: "SIX", definition: "The number after five." },
+      { word: "SKI", definition: "To glide over snow on long narrow boards." },
+      { word: "SKY", definition: "The space above the earth." },
+      { word: "SLY", definition: "Clever in a secretive way." },
+      { word: "SON", definition: "A male child." },
+      { word: "SOW", definition: "To plant seeds." },
+      { word: "SPA", definition: "A place for relaxation and treatments." },
+      { word: "SPY", definition: "A person who secretly gathers information." },
+      { word: "SUB", definition: "A substitute or a type of sandwich." },
+      { word: "SUM", definition: "The result of addition." },
+      { word: "SUN", definition: "The star that gives Earth light and heat." },
+      { word: "TAB", definition: "A small flap or an item on a bill." },
+      { word: "TAD", definition: "A small amount." },
+      { word: "TAG", definition: "A label or a children's chasing game." },
+      { word: "TAN", definition: "A light brown color." },
+      { word: "TAP", definition: "To hit lightly or a water faucet." },
+      { word: "TAR", definition: "A dark, sticky substance." },
+      { word: "TEA", definition: "A drink made by steeping leaves." },
+      { word: "TEN", definition: "The number after nine." },
+      { word: "THE", definition: "A word used before a noun." },
+      { word: "TIE", definition: "A strip of fabric worn around the neck or a knot." },
+      { word: "TIN", definition: "A silvery metal or a metal container." },
+      { word: "TIP", definition: "The pointed end or a helpful suggestion." },
+      { word: "TOE", definition: "One of the digits on a foot." },
+      { word: "TON", definition: "A unit of weight or a very large amount." },
+      { word: "TOO", definition: "Also or more than needed." },
+      { word: "TOP", definition: "The highest part." },
+      { word: "TOW", definition: "To pull a vehicle behind another." },
+      { word: "TOY", definition: "An object made for children to play with." },
+      { word: "TRY", definition: "To make an attempt." },
+      { word: "TUB", definition: "A large open container." },
+      { word: "TUG", definition: "To pull hard." },
+      { word: "TWO", definition: "The number after one." },
+      { word: "USE", definition: "To do something with a tool or object." },
+      { word: "VAN", definition: "A medium-sized road vehicle." },
+      { word: "VAT", definition: "A large container for liquid." },
+      { word: "VET", definition: "An animal doctor." },
+      { word: "VIA", definition: "By way of." },
+      { word: "VIE", definition: "To compete." },
+      { word: "VOW", definition: "A serious promise." },
+      { word: "WAR", definition: "A conflict between groups or countries." },
+      { word: "WAS", definition: "Past tense of is." },
+      { word: "NAIL", definition: "To complete." },
+      { word: "WAX", definition: "A soft substance used in candles." },
+      { word: "WAY", definition: "A path or method." },
+      { word: "WEB", definition: "A network made by a spider." },
+      { word: "WED", definition: "To marry." },
+      { word: "WET", definition: "Covered with liquid." },
+      { word: "WHO", definition: "A question asking which person." },
+      { word: "WHY", definition: "A question asking for a reason." },
+      { word: "WIN", definition: "To be successful in a contest." },
+      { word: "WIT", definition: "The ability to use words in a clever way." },
+      { word: "WOK", definition: "A rounded pan used for cooking." },
+      { word: "WON", definition: "Was successful in a contest." },
+      { word: "WOW", definition: "An expression of surprise or admiration." },
+      { word: "YES", definition: "A word expressing agreement." },
+      { word: "YET", definition: "Until now or at some future time." },
+      { word: "YOU", definition: "The person or people being spoken to." },
+      { word: "ZOO", definition: "A place where people can see many animals." },
+      { word: "EAST", definition: "The direction where the sun rises." },
+      { word: "EARN", definition: "To receive money for work." },
+      { word: "LATE", definition: "After the expected time." },
+      { word: "LEARN", definition: "To gain knowledge or skill." },
+      { word: "RATE", definition: "A measure or pace." },
+      { word: "REAL", definition: "Actually existing; not imagined." },
+      { word: "RENT", definition: "Payment for the use of a home or item." },
+      { word: "SILENT", definition: "Making little or no sound." },
+      { word: "STAR", definition: "A bright object in the night sky." },
+      { word: "TALE", definition: "A story." },
+      { word: "TEAR", definition: "A drop from the eye or to rip." }
+    ];
+    function shuffleTiles(tiles) {
+      for (let index = tiles.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [tiles[index], tiles[swapIndex]] = [tiles[swapIndex], tiles[index]];
+      }
+      return tiles;
+    }
+
+    class WordGame {
+      constructor(words) {
+        this.words = words;
+      }
+
+      findWord(word) {
+        return this.words.find(entry => entry.word === word);
+      }
+
+      addWord(word, definition) {
+        const normalizedWord = word.trim().toUpperCase();
+        const normalizedDefinition = definition.trim();
+        if (!/^[A-Z]{2,8}$/.test(normalizedWord)) {
+          throw new TypeError("A word must contain 2 to 8 letters.");
+        }
+        if (!normalizedDefinition) {
+          throw new TypeError("Enter a definition for the word.");
+        }
+        if (this.findWord(normalizedWord)) {
+          throw new RangeError(`"${normalizedWord}" is already in the word list.`);
+        }
+
+        const entry = { word: normalizedWord, definition: normalizedDefinition };
+        this.words.push(entry);
+        return entry;
+      }
+    }
+
+    class ScrabbleWordGame extends WordGame {
+      constructor(words, tileValues) {
+        super(words);
+        this.tileValues = tileValues;
+        this.score = 0;
+        this.rack = [];
+        this.selectedTiles = [];
+        this.tileBag = [];
+        this.nextTileId = 0;
+      }
+
+      createTileBag() {
+        return this.tileValues.flatMap(tileType =>
+          Array.from({ length: tileType.count }, () => ({
+            id: this.nextTileId++,
+            letter: tileType.letter,
+            points: tileType.points
+          }))
+        );
+      }
+
+      drawTiles(count) {
+        const drawnTiles = [];
+        while (drawnTiles.length < count && this.tileBag.length > 0) {
+          drawnTiles.push(this.tileBag.pop());
+        }
+        return drawnTiles;
+      }
+
+      start() {
+        this.nextTileId = 0;
+        this.score = 0;
+        this.selectedTiles = [];
+        this.tileBag = shuffleTiles(this.createTileBag());
+        this.rack = ["S", "T", "A", "R", "E", "N", "L", "I"].map(letter => {
+          const tileIndex = this.tileBag.findIndex(tile => tile.letter === letter);
+          if (tileIndex < 0) {
+            throw new Error(`The tile bag does not contain the required starter letter ${letter}.`);
+          }
+          return this.tileBag.splice(tileIndex, 1)[0];
+        });
+      }
+
+      selectTile(tileId) {
+        const selectedTile = this.rack.find(tile => tile.id === tileId);
+        if (!selectedTile || this.selectedTiles.some(tile => tile.id === tileId)) {
+          return false;
+        }
+        this.selectedTiles.push(selectedTile);
+        return true;
+      }
+
+      undoTile() {
+        return this.selectedTiles.pop();
+      }
+
+      clearWord() {
+        this.selectedTiles = [];
+      }
+
+      submitWord() {
+        const word = this.selectedTiles.map(tile => tile.letter).join("");
+        const matchingWord = this.findWord(word);
+        if (!matchingWord) {
+          return { valid: false, word };
+        }
+
+        const pointsEarned = this.selectedTiles.reduce((total, tile) => total + tile.points, 0);
+        const usedTileIds = new Set(this.selectedTiles.map(tile => tile.id));
+        this.rack = this.rack.filter(tile => !usedTileIds.has(tile.id));
+        this.score += pointsEarned;
+        this.selectedTiles = [];
+        this.rack.push(...this.drawTiles(7 - this.rack.length));
+        return { valid: true, word, definition: matchingWord.definition, pointsEarned };
+      }
+    }
+
+    class CelebrationGraphics {
+      constructor(container) {
+        this.container = container;
+        this.timeoutId = 0;
+        this.emojis = [
+          { symbol: "🎉", x: "12%", delay: "0ms" },
+          { symbol: "👏", x: "28%", delay: "80ms" },
+          { symbol: "🥳", x: "44%", delay: "160ms" },
+          { symbol: "🏆", x: "60%", delay: "240ms" },
+          { symbol: "⭐", x: "76%", delay: "320ms" },
+          { symbol: "🎊", x: "90%", delay: "400ms" }
+        ];
+      }
+
+      show() {
+        window.clearTimeout(this.timeoutId);
+        this.container.replaceChildren();
+        this.emojis.forEach(({ symbol, x, delay }) => {
+          const graphic = document.createElement("span");
+          graphic.className = "celebration-emoji";
+          graphic.textContent = symbol;
+          graphic.style.setProperty("--x", x);
+          graphic.style.setProperty("--delay", delay);
+          this.container.append(graphic);
+        });
+        this.container.classList.add("is-active");
+        this.timeoutId = window.setTimeout(() => {
+          this.container.classList.remove("is-active");
+          this.container.replaceChildren();
+        }, 2400);
+      }
+
+      clear() {
+        window.clearTimeout(this.timeoutId);
+        this.container.classList.remove("is-active");
+        this.container.replaceChildren();
+      }
+    }
+
+    const scrabbleGame = new ScrabbleWordGame(scrabbleWords, scrabbleTileValues);
+    const celebrationGraphics = new CelebrationGraphics(
+      document.getElementById("celebration-graphics")
+    );
+
+    function renderScrabbleGame() {
+      const rackElement = document.getElementById("tile-rack");
+      rackElement.replaceChildren();
+      scrabbleGame.rack.forEach(tile => {
+        const tileButton = document.createElement("button");
+        tileButton.type = "button";
+        tileButton.className = "tile";
+        tileButton.setAttribute("aria-label", `${tile.letter}, ${tile.points} points`);
+        tileButton.disabled = scrabbleGame.selectedTiles.some(selected => selected.id === tile.id);
+        tileButton.append(document.createTextNode(tile.letter));
+        const points = document.createElement("span");
+        points.className = "tile-points";
+        points.textContent = tile.points;
+        tileButton.append(points);
+        tileButton.addEventListener("click", () => selectGameTile(tile.id));
+        rackElement.append(tileButton);
+      });
+
+      const selectedWord = scrabbleGame.selectedTiles.map(tile => tile.letter).join("");
+      document.getElementById("word-preview").textContent = selectedWord || "Your word will appear here";
+      document.getElementById("game-score").textContent = scrabbleGame.score;
+      document.getElementById("tiles-left").textContent = scrabbleGame.tileBag.length;
+    }
+
+    function setGameMessage(message, state = "") {
+      const messageElement = document.getElementById("game-message");
+      messageElement.textContent = message;
+      if (state) {
+        messageElement.dataset.state = state;
+      } else {
+        delete messageElement.dataset.state;
+      }
+    }
+
+    function selectGameTile(tileId) {
+      if (!scrabbleGame.selectTile(tileId)) {
+        return;
+      }
+      setGameMessage("Keep choosing tiles, or submit your word.");
+      renderScrabbleGame();
+    }
+
+    function undoGameTile() {
+      scrabbleGame.undoTile();
+      renderScrabbleGame();
+    }
+
+function appreciation() {
+      setGameMessage("Thank you for playing! Your support is appreciated.", "success");
+    }
+
+
+
+    function clearGameWord() {
+      scrabbleGame.clearWord();
+      celebrationGraphics.clear();
+      appreciation();
+      renderScrabbleGame();
+    }
+
+    function submitScrabbleWord() {
+      const result = scrabbleGame.submitWord();
+      if (!result.valid) {
+        setGameMessage(result.word ? `"${result.word}" is not in this game's word list. Try again.` : "Choose some letter tiles first.", "error");
+        return false;
+      }
+
+      setGameMessage(`Nice! ${result.definition} You earned ${result.pointsEarned} points.`, "success");
+      celebrationGraphics.show();
+      renderScrabbleGame();
+      return true;
+    }
+
+    function startScrabbleGame() {
+      scrabbleGame.start();
+      celebrationGraphics.clear();
+      setGameMessage("Choose letters to make a word.");
+      renderScrabbleGame();
+    }
+
+    const TRANSLATION_LIMIT = 10000;
+    const TRANSLATION_CHUNK_SIZE = 1200;
+
+    function animateTranslation(text) {
+      const output = document.getElementById("translation-output");
+      const words = text.split(/(\s+)/u);
+      const wordCount = words.filter(part => part && !/^\s+$/u.test(part)).length;
+      const delayStep = wordCount > 1 ? Math.min(45, 1600 / (wordCount - 1)) : 0;
+      let wordIndex = 0;
+
+      output.replaceChildren();
+      words.forEach(part => {
+        if (!part) return;
+        if (/^\s+$/u.test(part)) {
+          output.append(document.createTextNode(part));
+          return;
+        }
+
+        const word = document.createElement("span");
+        word.className = "translation-word";
+        word.style.setProperty("--word-delay", `${Math.round(wordIndex * delayStep)}ms`);
+        word.textContent = part;
+        output.append(word);
+        wordIndex += 1;
+      });
+    }
+
+    function splitTranslationText(text) {
+      const characters = Array.from(text);
+      const chunks = [];
+      while (characters.length) {
+        let end = Math.min(TRANSLATION_CHUNK_SIZE, characters.length);
+        if (end < characters.length) {
+          const boundary = characters.slice(0, end).lastIndexOf(" ");
+          if (boundary > TRANSLATION_CHUNK_SIZE / 2) {
+            end = boundary + 1;
+          }
+        }
+        chunks.push(characters.splice(0, end).join(""));
+      }
+      return chunks;
+    }
+
+    async function translateChunk(text, targetLanguage) {
+      const url = new URL("https://translate.googleapis.com/translate_a/single");
+      url.search = new URLSearchParams({
+        client: "gtx",
+        sl: "en",
+        tl: targetLanguage,
+        dt: "t",
+        q: text
+      });
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Translation service returned HTTP ${response.status}. Please try again later.`);
+      }
+
+      const data = await response.json();
+      const translated = data?.[0]?.map(part => part?.[0] || "").join("");
+      if (typeof translated !== "string" || !translated) {
+        throw new Error("The translation service returned an empty or invalid response.");
+      }
+      return translated;
+    }
+
+    const translationSource = document.getElementById("translation-source");
+    const translationOutput = document.getElementById("translation-output");
+    const translationLanguage = document.getElementById("translation-language");
+    const translationStatus = document.getElementById("translation-status");
+    const translateButton = document.getElementById("translate-button");
+    const speakTranslationButton = document.getElementById("speak-translation-button");
+    const stopTranslationAudioButton = document.getElementById("stop-translation-audio-button");
+    const dictateTranslationButton = document.getElementById("dictate-translation-button");
+    const stopDictationButton = document.getElementById("stop-dictation-button");
+    const dictationStatus = document.getElementById("dictation-status");
+    const startLiveTranslationButton = document.getElementById("start-live-translation");
+    const stopLiveTranslationButton = document.getElementById("stop-live-translation");
+    const liveTranslationOutput = document.getElementById("live-translation-output");
+    const liveTranslationStatus = document.getElementById("live-translation-status");
+    const TranslationSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const speechSynthesis = window.speechSynthesis;
+    let latestTranslation = "";
+    let latestTranslationLanguage = "";
+    let translationRequestId = 0;
+    let dictationRecognition;
+    let dictationActive = false;
+    let liveTranslationRecognition;
+    let liveTranslationActive = false;
+    let liveTranslationRecognitionStarted = false;
+    let liveTranslationTimer = 0;
+    let liveTranslationRequestId = 0;
+    let liveTranslationText = "";
+    let activeTranslationUtterance = null;
+    let activeTranslationAudio = null;
+    let activeTranslationAudioId = 0;
+    let speechStartTimeout = 0;
+    const translationLocales = new Map([
+      ["fr", "fr-FR"], ["te", "te-IN"], ["es", "es-ES"], ["hi", "hi-IN"],
+      ["sa", "sa-IN"], ["kn", "kn-IN"], ["ta", "ta-IN"], ["mr", "mr-IN"], ["pa", "pa-IN"]
+    ]);
+
+    function setDictationStatus(message, state = "idle") {
+      dictationStatus.textContent = message;
+      dictationStatus.dataset.state = state;
+    }
+
+    function getSpeechRecognitionErrorMessage(error, fallback) {
+      if (error === "network") {
+        return `The browser could not reach its online speech recognition service. Check your internet connection and try again, or ${fallback}.`;
+      }
+      if (error === "not-allowed" || error === "service-not-allowed") {
+        return "Microphone or speech recognition access was denied. Allow it in browser settings and try again.";
+      }
+      if (error === "audio-capture") {
+        return "No microphone was found. Connect a microphone and try again.";
+      }
+      return `Voice recognition error: ${error}.`;
+    }
+
+    function stopDictation() {
+      dictationActive = false;
+      stopDictationButton.disabled = true;
+      dictateTranslationButton.disabled = false;
+      if (dictationRecognition) {
+        dictationRecognition.stop();
+      }
+      setDictationStatus("Voice input stopped.");
+    }
+
+    if (TranslationSpeechRecognition) {
+      dictationRecognition = new TranslationSpeechRecognition();
+      dictationRecognition.lang = "en-US";
+      dictationRecognition.continuous = false;
+      dictationRecognition.interimResults = false;
+      dictationRecognition.maxAlternatives = 1;
+      dictateTranslationButton.addEventListener("click", () => {
+        if (voiceListening) {
+          stopVoiceControl("Voice commands paused for translation dictation.");
+        }
+        dictationActive = true;
+        dictateTranslationButton.disabled = true;
+        stopDictationButton.disabled = false;
+        setDictationStatus("Listening for English text…", "listening");
+        try {
+          dictationRecognition.start();
+        } catch (error) {
+          dictationActive = false;
+          dictateTranslationButton.disabled = false;
+          stopDictationButton.disabled = true;
+          setDictationStatus(`Could not start voice input: ${error.message}`, "error");
+        }
+      });
+      stopDictationButton.addEventListener("click", stopDictation);
+      dictationRecognition.onresult = event => {
+        const transcript = Array.from(event.results)
+          .filter(result => result.isFinal)
+          .map(result => result[0].transcript.trim())
+          .filter(Boolean)
+          .join(" ");
+        if (!transcript) {
+          setDictationStatus("No speech was recognized. Try again.", "error");
+          return;
+        }
+
+        const existingText = translationSource.value.trim();
+        translationSource.value = existingText ? `${existingText} ${transcript}` : transcript;
+        translationSource.dispatchEvent(new Event("input", { bubbles: true }));
+        setDictationStatus("Voice input added. Select a language and translate when ready.", "success");
+      };
+      dictationRecognition.onerror = event => {
+        if (event.error === "no-speech") {
+          setDictationStatus("No speech was detected. Try again.", "error");
+          return;
+        }
+        dictationActive = false;
+        dictateTranslationButton.disabled = false;
+        stopDictationButton.disabled = true;
+        setDictationStatus(
+          getSpeechRecognitionErrorMessage(event.error, "type the text instead"),
+          "error",
+        );
+      };
+      dictationRecognition.onend = () => {
+        dictationActive = false;
+        dictateTranslationButton.disabled = false;
+        stopDictationButton.disabled = true;
+      };
+    } else {
+      dictateTranslationButton.disabled = true;
+      stopDictationButton.disabled = true;
+      setDictationStatus("Voice input is not supported in this browser. Type the text instead.", "error");
+    }
+
+    function setLiveTranslationStatus(message, state = "idle") {
+      liveTranslationStatus.textContent = message;
+      liveTranslationStatus.dataset.state = state;
+    }
+
+    function scheduleLiveTranslation(text) {
+      liveTranslationText = text;
+      const requestId = ++liveTranslationRequestId;
+      window.clearTimeout(liveTranslationTimer);
+      if (!text) return;
+
+      liveTranslationTimer = window.setTimeout(async () => {
+        const targetLanguage = translationLanguage.value;
+        const targetLabel = translationLanguage.options[translationLanguage.selectedIndex].text;
+        setLiveTranslationStatus(`Translating to ${targetLabel}…`, "listening");
+        try {
+          const translated = await translateChunk(text, targetLanguage);
+          if (!liveTranslationActive || requestId !== liveTranslationRequestId) return;
+          const ticker = document.createElement("span");
+          ticker.textContent = translated;
+          liveTranslationOutput.replaceChildren(ticker);
+          setLiveTranslationStatus(`Live translation active · ${targetLabel}`, "success");
+        } catch (error) {
+          if (!liveTranslationActive || requestId !== liveTranslationRequestId) return;
+          setLiveTranslationStatus(
+            error instanceof TypeError
+              ? "Could not reach the translation service. Check your connection and keep speaking to retry."
+              : error.message,
+            "error",
+          );
+        }
+      }, 650);
+    }
+
+    function stopLiveTranslation(message = "Live translation is off.") {
+      liveTranslationActive = false;
+      liveTranslationRequestId += 1;
+      window.clearTimeout(liveTranslationTimer);
+      startLiveTranslationButton.disabled = !liveTranslationRecognition;
+      stopLiveTranslationButton.disabled = true;
+      if (liveTranslationRecognitionStarted) {
+        liveTranslationRecognition.stop();
+      }
+      setLiveTranslationStatus(message);
+    }
+
+    if (TranslationSpeechRecognition) {
+      liveTranslationRecognition = new TranslationSpeechRecognition();
+      liveTranslationRecognition.lang = "en-US";
+      liveTranslationRecognition.continuous = true;
+      liveTranslationRecognition.interimResults = true;
+      liveTranslationRecognition.maxAlternatives = 1;
+      liveTranslationRecognition.onstart = () => {
+        liveTranslationRecognitionStarted = true;
+        stopLiveTranslationButton.disabled = false;
+        setLiveTranslationStatus("Listening for English speech…", "listening");
+      };
+      liveTranslationRecognition.onresult = event => {
+        const latestResult = event.results[event.results.length - 1];
+        const transcript = latestResult?.[0]?.transcript.trim();
+        if (transcript) {
+          scheduleLiveTranslation(transcript);
+        }
+      };
+      liveTranslationRecognition.onerror = event => {
+        if (event.error === "no-speech") return;
+        liveTranslationActive = false;
+        liveTranslationRecognitionStarted = false;
+        startLiveTranslationButton.disabled = false;
+        stopLiveTranslationButton.disabled = true;
+        setLiveTranslationStatus(
+          getSpeechRecognitionErrorMessage(event.error, "use the typed translator instead"),
+          "error",
+        );
+      };
+      liveTranslationRecognition.onend = () => {
+        liveTranslationRecognitionStarted = false;
+        if (!liveTranslationActive) return;
+        window.setTimeout(() => {
+          if (!liveTranslationActive) return;
+          try {
+            liveTranslationRecognition.start();
+          } catch (error) {
+            liveTranslationActive = false;
+            startLiveTranslationButton.disabled = false;
+            stopLiveTranslationButton.disabled = true;
+            setLiveTranslationStatus(`Could not restart speech recognition: ${error.message}`, "error");
+          }
+        }, 250);
+      };
+      startLiveTranslationButton.addEventListener("click", () => {
+        if (voiceListening) {
+          stopVoiceControl("Voice commands paused for live translation.");
+        }
+        if (dictationActive) {
+          stopDictation();
+        }
+        liveTranslationActive = true;
+        liveTranslationText = "";
+        liveTranslationOutput.replaceChildren();
+        startLiveTranslationButton.disabled = true;
+        stopLiveTranslationButton.disabled = true;
+        setLiveTranslationStatus("Starting live translation…", "listening");
+        try {
+          liveTranslationRecognition.start();
+        } catch (error) {
+          liveTranslationActive = false;
+          startLiveTranslationButton.disabled = false;
+          setLiveTranslationStatus(`Could not start speech recognition: ${error.message}`, "error");
+        }
+      });
+      stopLiveTranslationButton.addEventListener("click", () => stopLiveTranslation());
+    } else {
+      startLiveTranslationButton.disabled = true;
+      stopLiveTranslationButton.disabled = true;
+      setLiveTranslationStatus("Live speech recognition is not supported in this browser.", "error");
+    }
+
+    function stopTranslationAudio() {
+      activeTranslationAudioId += 1;
+      window.clearTimeout(speechStartTimeout);
+      speechStartTimeout = 0;
+      activeTranslationUtterance = null;
+      if (activeTranslationAudio) {
+        activeTranslationAudio.pause();
+        activeTranslationAudio.removeAttribute("src");
+        activeTranslationAudio.load();
+        activeTranslationAudio = null;
+      }
+      if (speechSynthesis) {
+        speechSynthesis.cancel();
+      }
+      stopTranslationAudioButton.disabled = true;
+    }
+
+    function splitSpeechText(text, maxLength = 180) {
+      const chunks = [];
+      let chunk = "";
+      for (const word of text.match(/\S+\s*/gu) || []) {
+        if (chunk && chunk.length + word.length > maxLength) {
+          chunks.push(chunk.trim());
+          chunk = "";
+        }
+        if (word.length > maxLength) {
+          if (chunk) chunks.push(chunk.trim());
+          chunk = "";
+          for (let offset = 0; offset < word.length; offset += maxLength) {
+            const part = word.slice(offset, offset + maxLength);
+            if (part.length === maxLength) chunks.push(part);
+            else chunk = part;
+          }
+        } else {
+          chunk += word;
+        }
+      }
+      if (chunk.trim()) chunks.push(chunk.trim());
+      return chunks;
+    }
+
+    function playTranslationAudioFallback(text, languageCode, locale) {
+      if (typeof window.Audio !== "function") {
+        translationStatus.textContent = "Audio playback is not supported in this browser.";
+        translationStatus.dataset.state = "error";
+        speakTranslationButton.disabled = false;
+        return;
+      }
+
+      const chunks = splitSpeechText(text);
+      const audioId = activeTranslationAudioId;
+      let chunkIndex = 0;
+      const playNextChunk = () => {
+        if (audioId !== activeTranslationAudioId) return;
+        if (chunkIndex >= chunks.length) {
+          activeTranslationAudio = null;
+          speakTranslationButton.disabled = false;
+          stopTranslationAudioButton.disabled = true;
+          translationStatus.textContent = "Translation audio finished.";
+          translationStatus.dataset.state = "success";
+          return;
+        }
+
+        const url = new URL("https://translate.google.com/translate_tts");
+        url.search = new URLSearchParams({
+          ie: "UTF-8",
+          client: "tw-ob",
+          tl: languageCode,
+          q: chunks[chunkIndex]
+        });
+        const audio = new window.Audio(url.href);
+        activeTranslationAudio = audio;
+        audio.preload = "auto";
+        audio.onplaying = () => {
+          if (audioId !== activeTranslationAudioId) return;
+          window.clearTimeout(speechStartTimeout);
+          speechStartTimeout = 0;
+          stopTranslationAudioButton.disabled = false;
+          translationStatus.textContent =
+            `Playing translation audio (${translationLanguage.options[translationLanguage.selectedIndex].text}; ${locale})…`;
+          translationStatus.dataset.state = "success";
+        };
+        audio.onended = () => {
+          if (audioId !== activeTranslationAudioId) return;
+          window.clearTimeout(speechStartTimeout);
+          speechStartTimeout = 0;
+          chunkIndex += 1;
+          playNextChunk();
+        };
+        audio.onerror = () => {
+          if (audioId !== activeTranslationAudioId) return;
+          window.clearTimeout(speechStartTimeout);
+          speechStartTimeout = 0;
+          activeTranslationAudio = null;
+          speakTranslationButton.disabled = false;
+          stopTranslationAudioButton.disabled = true;
+          translationStatus.textContent =
+            "Could not load translated audio. Check your internet connection and try again.";
+          translationStatus.dataset.state = "error";
+        };
+
+        speechStartTimeout = window.setTimeout(() => {
+          if (audioId !== activeTranslationAudioId || activeTranslationAudio !== audio) return;
+          activeTranslationAudio = null;
+          audio.pause();
+          speakTranslationButton.disabled = false;
+          stopTranslationAudioButton.disabled = true;
+          translationStatus.textContent =
+            "The audio service did not start playback. Check your internet connection and try again.";
+          translationStatus.dataset.state = "error";
+        }, 12000);
+        try {
+          const playResult = audio.play();
+          if (playResult && typeof playResult.catch === "function") {
+            playResult.catch(error => {
+              if (audioId !== activeTranslationAudioId || activeTranslationAudio !== audio) return;
+              window.clearTimeout(speechStartTimeout);
+              speechStartTimeout = 0;
+              activeTranslationAudio = null;
+              speakTranslationButton.disabled = false;
+              stopTranslationAudioButton.disabled = true;
+              translationStatus.textContent = `Could not start translated audio: ${error.message}`;
+              translationStatus.dataset.state = "error";
+            });
+          }
+        } catch (error) {
+          window.clearTimeout(speechStartTimeout);
+          speechStartTimeout = 0;
+          activeTranslationAudio = null;
+          speakTranslationButton.disabled = false;
+          stopTranslationAudioButton.disabled = true;
+          translationStatus.textContent = `Could not start translated audio: ${error.message}`;
+          translationStatus.dataset.state = "error";
+        }
+      };
+
+      translationStatus.textContent = "Starting translated audio…";
+      translationStatus.dataset.state = "listening";
+      playNextChunk();
+    }
+
+    function speakTranslation() {
+      if (latestTranslation && latestTranslationLanguage !== translationLanguage.value) {
+        translateText();
+        return;
+      }
+      if (!latestTranslation) {
+        translationStatus.textContent = "Translate some text before playing audio.";
+        translationStatus.dataset.state = "error";
+        return;
+      }
+
+      stopTranslationAudio();
+      const languageCode = translationLanguage.value;
+      const locale = translationLocales.get(languageCode) || languageCode;
+      if (!speechSynthesis || typeof speechSynthesis.speak !== "function" || !window.SpeechSynthesisUtterance) {
+        speakTranslationButton.disabled = true;
+        playTranslationAudioFallback(latestTranslation, languageCode, locale);
+        return;
+      }
+
+      const utterance = new window.SpeechSynthesisUtterance(latestTranslation);
+      utterance.lang = locale;
+      const voices = speechSynthesis.getVoices();
+      const selectedVoice = voices.find(voice => voice.lang.toLowerCase() === locale.toLowerCase())
+        || voices.find(voice => voice.lang.toLowerCase().startsWith(`${languageCode}-`));
+      if (!selectedVoice) {
+        speakTranslationButton.disabled = true;
+        playTranslationAudioFallback(latestTranslation, languageCode, locale);
+        return;
+      }
+      utterance.voice = selectedVoice || null;
+      activeTranslationUtterance = utterance;
+      utterance.onstart = () => {
+        if (activeTranslationUtterance !== utterance) return;
+        window.clearTimeout(speechStartTimeout);
+        speechStartTimeout = 0;
+        stopTranslationAudioButton.disabled = false;
+        translationStatus.textContent =
+          `Playing translation audio (${translationLanguage.options[translationLanguage.selectedIndex].text}; ${selectedVoice.name})…`;
+        translationStatus.dataset.state = "success";
+      };
+      utterance.onend = () => {
+        if (activeTranslationUtterance !== utterance) return;
+        window.clearTimeout(speechStartTimeout);
+        speechStartTimeout = 0;
+        activeTranslationUtterance = null;
+        speakTranslationButton.disabled = false;
+        stopTranslationAudioButton.disabled = true;
+        translationStatus.textContent = "Translation audio finished.";
+        translationStatus.dataset.state = "success";
+      };
+      utterance.onerror = event => {
+        if (activeTranslationUtterance !== utterance) return;
+        window.clearTimeout(speechStartTimeout);
+        speechStartTimeout = 0;
+        activeTranslationUtterance = null;
+        speakTranslationButton.disabled = true;
+        playTranslationAudioFallback(latestTranslation, languageCode, locale);
+      };
+      speakTranslationButton.disabled = true;
+      speechStartTimeout = window.setTimeout(() => {
+        if (activeTranslationUtterance !== utterance) return;
+        activeTranslationUtterance = null;
+        speakTranslationButton.disabled = true;
+        playTranslationAudioFallback(latestTranslation, languageCode, locale);
+      }, 8000);
+      try {
+        speechSynthesis.speak(utterance);
+      } catch (error) {
+        window.clearTimeout(speechStartTimeout);
+        speechStartTimeout = 0;
+        activeTranslationUtterance = null;
+        speakTranslationButton.disabled = false;
+        stopTranslationAudioButton.disabled = true;
+        translationStatus.textContent = `Could not start translation audio: ${error.message}`;
+        translationStatus.dataset.state = "error";
+      }
+    }
+
+    async function translateText() {
+      const requestId = ++translationRequestId;
+      const text = translationSource.value.trim();
+      if (!text) {
+        latestTranslation = "";
+        latestTranslationLanguage = "";
+        speakTranslationButton.disabled = true;
+        translationStatus.textContent = "Enter English text to translate.";
+        translationStatus.dataset.state = "error";
+        translationSource.focus();
+        return false;
+      }
+      if (Array.from(text).length > TRANSLATION_LIMIT) {
+        latestTranslation = "";
+        latestTranslationLanguage = "";
+        speakTranslationButton.disabled = true;
+        translationStatus.textContent = "Text must be 10,000 characters or fewer.";
+        translationStatus.dataset.state = "error";
+        return false;
+      }
+
+      const targetLanguage = translationLanguage.value;
+      translateButton.disabled = true;
+      stopTranslationAudio();
+      latestTranslation = "";
+      latestTranslationLanguage = "";
+      speakTranslationButton.disabled = true;
+      translationOutput.replaceChildren();
+      const targetLabel = translationLanguage.options[translationLanguage.selectedIndex].text;
+      translationStatus.textContent = `Translating to ${targetLabel}…`;
+      delete translationStatus.dataset.state;
+      try {
+        const chunks = splitTranslationText(text);
+        const translatedChunks = [];
+        for (const chunk of chunks) {
+          translatedChunks.push(await translateChunk(chunk, targetLanguage));
+          if (requestId !== translationRequestId) return false;
+        }
+        if (requestId !== translationRequestId) return false;
+        latestTranslation = translatedChunks.join("");
+        latestTranslationLanguage = targetLanguage;
+        animateTranslation(latestTranslation);
+        speakTranslationButton.disabled = false;
+        translationStatus.textContent = `Translation complete (${targetLabel}).`;
+        translationStatus.dataset.state = "success";
+        return true;
+      } catch (error) {
+        if (requestId !== translationRequestId) return false;
+        translationStatus.textContent = error instanceof TypeError
+          ? "Could not reach Google's translation service. Check your connection and try again."
+          : error.message;
+        translationStatus.dataset.state = "error";
+        return false;
+      } finally {
+        if (requestId === translationRequestId) {
+          translateButton.disabled = false;
+        }
+      }
+    }
+
+    translationSource.addEventListener("input", () => {
+      translationRequestId += 1;
+      translateButton.disabled = false;
+      stopTranslationAudio();
+      latestTranslation = "";
+      latestTranslationLanguage = "";
+      speakTranslationButton.disabled = true;
+      translationOutput.replaceChildren();
+      document.getElementById("translation-count").textContent =
+        `${Array.from(translationSource.value).length.toLocaleString()} / 10,000`;
+      translationStatus.textContent = "";
+      delete translationStatus.dataset.state;
+    });
+
+    translateButton.addEventListener("click", translateText);
+    translationLanguage.addEventListener("change", () => {
+      stopTranslationAudio();
+      if (liveTranslationActive && liveTranslationText) {
+        scheduleLiveTranslation(liveTranslationText);
+      }
+      if (latestTranslation || translateButton.disabled) {
+        translateText();
+      } else {
+        latestTranslation = "";
+        latestTranslationLanguage = "";
+        speakTranslationButton.disabled = true;
+        translationOutput.replaceChildren();
+        translationStatus.textContent = "Language changed. Translate the text to hear it in the new language.";
+        delete translationStatus.dataset.state;
+      }
+    });
+    speakTranslationButton.addEventListener("click", speakTranslation);
+    stopTranslationAudioButton.addEventListener("click", () => {
+      stopTranslationAudio();
+      speakTranslationButton.disabled = false;
+      translationStatus.textContent = "Translation audio stopped.";
+      translationStatus.dataset.state = "success";
+    });
+
+    const voiceStartButton = document.getElementById("voice-start");
+    const voiceStopButton = document.getElementById("voice-stop");
+    const voiceStatus = document.getElementById("voice-status");
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let voiceRecognition;
+    let voiceListening = false;
+    let voiceRecognitionStarted = false;
+
+    function setVoiceStatus(message, state = "idle") {
+      voiceStatus.textContent = message;
+      voiceStatus.dataset.state = state;
+    }
+
+    function stopVoiceControl(message = "Voice control is off.") {
+      voiceListening = false;
+      voiceStartButton.disabled = false;
+      voiceStopButton.disabled = true;
+      if (voiceRecognitionStarted) {
+        voiceRecognition.stop();
+      }
+      setVoiceStatus(message);
+    }
+
+    function runVoiceCommand(transcript) {
+      const command = transcript.trim();
+      let match = command.match(/^(?:please\s+)?insert paragraph(?: at index (\d+))?(?:\s+(?:saying|with text)\s+|\s+)(.+)$/i);
+      if (match) {
+        const index = match[1] === undefined ? 1 : Number(match[1]);
+        insertParagraphAt(index, match[2].trim());
+        setVoiceStatus(`Inserted a paragraph at index ${index}.`, "listening");
+        return true;
+      }
+
+      match = command.match(/^(?:please\s+)?remove paragraph(?: at index)?\s+(\d+)$/i);
+      if (match) {
+        const index = Number(match[1]);
+        if (!removeParagraphAt(index)) {
+          setVoiceStatus(`There is no paragraph at index ${index}.`, "error");
+          return false;
+        }
+        setVoiceStatus(`Removed the paragraph at index ${index}.`, "listening");
+        return true;
+      }
+
+      match = command.match(/^(?:please\s+)?update paragraph(?: at index)?\s+(\d+)\s+(?:to|with text)\s+(.+)$/i);
+      if (match) {
+        const index = Number(match[1]);
+        if (!updateParagraphAt(index, match[2].trim())) {
+          setVoiceStatus(`There is no paragraph at index ${index}.`, "error");
+          return false;
+        }
+        setVoiceStatus(`Updated the paragraph at index ${index}.`, "listening");
+        return true;
+      }
+
+      match = command.match(/^(?:please\s+)?translate\s+(.+)\s+to\s+(French|Telugu|Spanish|Hindi|Sanskrit|Kannada|Tamil|Marathi|Punjabi)$/i);
+      if (match) {
+        const languageCodes = new Map([
+          ["french", "fr"], ["telugu", "te"], ["spanish", "es"], ["hindi", "hi"],
+          ["sanskrit", "sa"], ["kannada", "kn"], ["tamil", "ta"], ["marathi", "mr"],
+          ["punjabi", "pa"]
+        ]);
+        translationSource.value = match[1].trim();
+        translationLanguage.value = languageCodes.get(match[2].toLowerCase());
+        translationSource.dispatchEvent(new Event("input", { bubbles: true }));
+        translateButton.click();
+        return true;
+      }
+
+      const destinations = new Map([
+        ["google", "https://www.google.com/"],
+        ["bing", "https://www.bing.com/"],
+        ["youtube", "https://www.youtube.com/"]
+      ]);
+      match = command.match(/^(?:please\s+)?open\s+(.+)$/i);
+      if (match) {
+        const address = match[1].trim().replace(/\s+dot\s+/gi, ".");
+        let destination = destinations.get(address.toLowerCase());
+        if (!destination && /\s/.test(address)) {
+          setVoiceStatus("I could not open that address. Say a website name or a valid web address.", "error");
+          return false;
+        }
+        try {
+          const parsedUrl = new URL(destination || (/^https?:\/\//i.test(address) ? address : `https://${address}`));
+          if (!/^https?:$/.test(parsedUrl.protocol) || !parsedUrl.hostname || parsedUrl.username || parsedUrl.password) {
+            throw new Error("Unsupported website address.");
+          }
+          destination = parsedUrl.href;
+        } catch {
+          setVoiceStatus("I could not open that address. Say a website name or a valid web address.", "error");
+          return false;
+        }
+        const opened = window.open(destination, "_blank");
+        if (opened) {
+          opened.opener = null;
+          setVoiceStatus(`Opened ${new URL(destination).hostname} in a new tab.`, "listening");
+        } else {
+          setVoiceStatus("The browser blocked the new tab. Allow pop-ups and try again.", "error");
+        }
+        return Boolean(opened);
+      }
+
+      match = command.match(/^(?:please\s+)?search (?:the )?web for (.+)$/i);
+      if (match) {
+        const opened = window.open(`https://www.bing.com/search?q=${encodeURIComponent(match[1].trim())}`, "_blank");
+        if (opened) opened.opener = null;
+        setVoiceStatus(opened ? "Opened web search results in a new tab." : "The browser blocked the search tab. Allow pop-ups and try again.", opened ? "listening" : "error");
+        return Boolean(opened);
+      }
+
+      if (/^(?:refresh|reload)(?: page)?$/i.test(command)) {
+        setVoiceStatus("Refreshing this page…", "listening");
+        window.location.reload();
+        return true;
+      }
+
+      if (/^(?:stop voice control|stop listening)$/i.test(command)) {
+        stopVoiceControl();
+        return true;
+      }
+
+      setVoiceStatus("Command not recognized. Try insert, remove, update, translate, open, search, or refresh.", "error");
+      return false;
+    }
+
+    if (!SpeechRecognition) {
+      voiceStartButton.disabled = true;
+      setVoiceStatus("Voice recognition is not supported in this browser. Try a recent version of Chrome or Edge.", "error");
+    } else {
+      voiceRecognition = new SpeechRecognition();
+      voiceRecognition.lang = "en-US";
+      voiceRecognition.continuous = true;
+      voiceRecognition.interimResults = false;
+      voiceRecognition.maxAlternatives = 1;
+      voiceRecognition.onstart = () => {
+        voiceRecognitionStarted = true;
+        voiceStopButton.disabled = false;
+        setVoiceStatus("Listening for voice commands…", "listening");
+      };
+      voiceRecognition.onresult = event => {
+        for (let index = event.resultIndex; index < event.results.length; index += 1) {
+          const result = event.results[index];
+          if (result.isFinal) {
+            try {
+              runVoiceCommand(result[0].transcript);
+            } catch (error) {
+              setVoiceStatus(error.message, "error");
+            }
+          }
+        }
+      };
+      voiceRecognition.onerror = event => {
+        if (event.error === "no-speech") return;
+        voiceListening = false;
+        voiceRecognitionStarted = false;
+        voiceStartButton.disabled = false;
+        voiceStopButton.disabled = true;
+        setVoiceStatus(
+          getSpeechRecognitionErrorMessage(event.error, "use the page controls instead"),
+          "error",
+        );
+      };
+      voiceRecognition.onend = () => {
+        voiceRecognitionStarted = false;
+        if (!voiceListening) return;
+        window.setTimeout(() => {
+          if (!voiceListening) return;
+          try {
+            voiceRecognition.start();
+          } catch (error) {
+            voiceListening = false;
+            voiceStartButton.disabled = false;
+            voiceStopButton.disabled = true;
+            setVoiceStatus(`Could not restart voice recognition: ${error.message}`, "error");
+          }
+        }, 250);
+      };
+
+      voiceStartButton.addEventListener("click", () => {
+        voiceListening = true;
+        voiceStartButton.disabled = true;
+        voiceStopButton.disabled = true;
+        try {
+          voiceRecognition.start();
+        } catch (error) {
+          voiceListening = false;
+          voiceStartButton.disabled = false;
+          voiceStopButton.disabled = true;
+          setVoiceStatus(`Could not start voice recognition: ${error.message}`, "error");
+        }
+      });
+      voiceStopButton.addEventListener("click", () => stopVoiceControl());
+    }
+
+    window.domElements = domElements;
+    window.paragraphElements = paragraphElements;
+    window.createParagraph = createParagraph;
+    window.spliceParagraphs = spliceParagraphs;
+    window.insertParagraphAt = insertParagraphAt;
+    window.removeParagraphAt = removeParagraphAt;
+    window.updateParagraphAt = updateParagraphAt;
+    window.runVoiceCommand = runVoiceCommand;
+    Object.assign(window, calculatorOperations);
+    window.calculator = calculatorOperations;
+    window.scrabbleGame = scrabbleGame;
+    window.WordGame = WordGame;
+    window.ScrabbleWordGame = ScrabbleWordGame;
+    window.scrabbleTileValues = scrabbleTileValues;
+    window.scrabbleWords = scrabbleGame.words;
+    window.startScrabbleGame = startScrabbleGame;
+    window.submitScrabbleWord = submitScrabbleWord;
+
+    document.getElementById("insert-button").addEventListener("click", () => {
+      const text = document.getElementById("insert-text").value.trim();
+      const displayMode = document.getElementById("insert-mode").value;
+      if (!text) {
+        document.getElementById("insert-text").focus();
+        return;
+      }
+      insertParagraphAt(1, text, displayMode);
+    });
+    document.getElementById("remove-button").addEventListener("click", () => {
+      removeParagraphAt(1);
+    });
+
+    document.querySelectorAll("[data-update-paragraph]").forEach(button => {
+      button.addEventListener("click", () => {
+        const paragraphId = button.dataset.updateParagraph;
+        const newText = document.getElementById(`${paragraphId}-text`).value;
+        updateParagraphElement(domElements[paragraphId], newText);
+      });
+    });
+
+    document.getElementById("undo-tile-button").addEventListener("click", undoGameTile);
+    document.getElementById("clear-word-button").addEventListener("click", clearGameWord);
+    document.getElementById("submit-word-button").addEventListener("click", submitScrabbleWord);
+    document.getElementById("new-game-button").addEventListener("click", startScrabbleGame);
+    document.getElementById("add-word-button").addEventListener("click", () => {
+      const wordInput = document.getElementById("custom-word");
+      const definitionInput = document.getElementById("custom-definition");
+      try {
+        const addedWord = scrabbleGame.addWord(wordInput.value, definitionInput.value);
+        wordInput.value = "";
+        definitionInput.value = "";
+        setGameMessage(`Added "${addedWord.word}" to the word list.`, "success");
+      } catch (error) {
+        if (!(error instanceof TypeError) && !(error instanceof RangeError)) {
+          throw error;
+        }
+        setGameMessage(error.message, "error");
+      }
+    });
+
+    document.querySelectorAll("[data-operation]").forEach(button => {
+      button.addEventListener("click", () => {
+        const a = document.getElementById("number-a").valueAsNumber;
+        const b = document.getElementById("number-b").valueAsNumber;
+        const result = document.getElementById("calculator-result");
+
+        try {
+          result.textContent = `Result: ${calculatorOperations[button.dataset.operation](a, b)}`;
+        } catch (error) {
+          result.textContent = error.message;
+        }
+      });
+    });
+
+    renderParagraphs();
+    startScrabbleGame();
+
+    window.guestModeActive = false;
+    window.enterGuestMode = function () {
+      window.guestModeActive = true;
+      document.getElementById("account-email").textContent =
+        "Guest session — changes are not saved";
+      document.getElementById("logout-button").textContent = "Exit guest mode";
+      document.getElementById("auth-view").hidden = true;
+      document.getElementById("app-content").hidden = false;
+    };
+    window.exitGuestMode = function () {
+      window.guestModeActive = false;
+      document.getElementById("app-content").hidden = true;
+      document.getElementById("auth-view").hidden = false;
+      document.getElementById("logout-button").textContent = "Log out";
+    };
+    document.getElementById("guest-button").addEventListener("click", window.enterGuestMode);
+    document.getElementById("logout-button").addEventListener("click", () => {
+      if (window.guestModeActive) {
+        window.exitGuestMode();
+      }
+    });
+  </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      createUserWithEmailAndPassword,
+      GithubAuthProvider,
+      GoogleAuthProvider,
+      onAuthStateChanged,
+      reload,
+      sendEmailVerification,
+      signInWithEmailAndPassword,
+      signInWithPopup,
+      signOut,
+      updateProfile,
+      getAuth
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      doc,
+      getDoc,
+      getFirestore,
+      serverTimestamp,
+      setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    // Replace these values with the Firebase web app config from Project settings.
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      appId: "YOUR_APP_ID"
+    };
+    const configIsReady = Object.values(firebaseConfig).every(value =>
+      value && !value.startsWith("YOUR_")
+    );
+    const authView = document.getElementById("auth-view");
+    const appContent = document.getElementById("app-content");
+    const authHeading = document.getElementById("auth-heading");
+    const authMessage = document.getElementById("auth-message");
+    const loginForm = document.getElementById("login-form");
+    const registrationForm = document.getElementById("registration-form");
+    const verificationPanel = document.getElementById("verification-panel");
+    const profileForm = document.getElementById("profile-form");
+    const ssoActions = document.getElementById("sso-actions");
+
+    function setAuthMessage(message, state = "") {
+      authMessage.textContent = message;
+      if (state) {
+        authMessage.dataset.state = state;
+      } else {
+        delete authMessage.dataset.state;
+      }
+    }
+
+    function showAuthScreen(screen) {
+      loginForm.hidden = screen !== "login";
+      registrationForm.hidden = screen !== "register";
+      verificationPanel.hidden = screen !== "verification";
+      profileForm.hidden = screen !== "profile";
+      ssoActions.hidden = screen !== "login" && screen !== "register";
+      authHeading.textContent = screen === "register" ? "Create account" :
+        screen === "verification" ? "Verify your email" :
+        screen === "profile" ? "Complete your profile" : "Sign in";
+    }
+
+    function setAuthBusy(isBusy) {
+      document.querySelectorAll(".auth-control").forEach(button => {
+        button.disabled = isBusy;
+      });
+    }
+
+    document.querySelectorAll("[data-auth-mode]").forEach(button => {
+      button.addEventListener("click", () => {
+        setAuthMessage("");
+        showAuthScreen(button.dataset.authMode);
+      });
+    });
+
+    if (!configIsReady) {
+      document.getElementById("auth-config-notice").hidden = false;
+      showAuthScreen("login");
+      setAuthBusy(true);
+      setAuthMessage("Firebase is not configured yet.");
+    } else {
+      document.getElementById("auth-config-notice").hidden = true;
+      const firebaseApp = initializeApp(firebaseConfig);
+      const auth = getAuth(firebaseApp);
+      const database = getFirestore(firebaseApp);
+      const googleProvider = new GoogleAuthProvider();
+      const githubProvider = new GithubAuthProvider();
+      githubProvider.addScope("user:email");
+
+      async function showProfileOrApp(user) {
+        if (!user.email) {
+          showAuthScreen("profile");
+          setAuthMessage(
+            "No email address was shared by this sign-in provider. Sign out and use an account with an email address.",
+            "error"
+          );
+          return;
+        }
+        if (!user.emailVerified) {
+          document.getElementById("verification-email").textContent =
+            `A confirmation link was sent to ${user.email || "your email address"}.`;
+          showAuthScreen("verification");
+          return;
+        }
+
+        try {
+          const profileSnapshot = await getDoc(doc(database, "userProfiles", user.uid));
+          if (auth.currentUser?.uid !== user.uid) {
+            return;
+          }
+          const profile = profileSnapshot.exists() ? profileSnapshot.data() : {};
+          if (!profile.name || !profile.telephone || !profile.mobile) {
+            document.getElementById("profile-name").value = profile.name || user.displayName || "";
+            document.getElementById("profile-telephone").value = profile.telephone || "";
+            document.getElementById("profile-mobile").value = profile.mobile || "";
+            showAuthScreen("profile");
+            return;
+          }
+
+          authView.hidden = true;
+          appContent.hidden = false;
+          document.getElementById("account-email").textContent = user.email || "";
+        } catch (error) {
+          showAuthScreen("profile");
+          setAuthMessage(`Could not load your profile: ${error.message}`, "error");
+        }
+      }
+
+      loginForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        setAuthBusy(true);
+        setAuthMessage("");
+        try {
+          const formData = new FormData(loginForm);
+          await signInWithEmailAndPassword(
+            auth,
+            formData.get("email").trim(),
+            formData.get("password")
+          );
+        } catch (error) {
+          setAuthMessage(error.message, "error");
+        } finally {
+          setAuthBusy(false);
+        }
+      });
+
+      registrationForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        setAuthBusy(true);
+        setAuthMessage("");
+        try {
+          const formData = new FormData(registrationForm);
+          const name = formData.get("name").trim();
+          const email = formData.get("email").trim();
+          const telephone = formData.get("telephone").trim();
+          const mobile = formData.get("mobile").trim();
+          const credential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            formData.get("password")
+          );
+          await updateProfile(credential.user, { displayName: name });
+          await setDoc(doc(database, "userProfiles", credential.user.uid), {
+            name,
+            email,
+            telephone,
+            mobile,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          await sendEmailVerification(credential.user);
+          document.getElementById("verification-email").textContent =
+            `A confirmation link was sent to ${email}.`;
+          showAuthScreen("verification");
+          setAuthMessage("Registration complete. Check your email to verify your account.", "success");
+        } catch (error) {
+          setAuthMessage(error.message, "error");
+        } finally {
+          setAuthBusy(false);
+        }
+      });
+
+      async function signInWithProvider(provider) {
+        setAuthBusy(true);
+        setAuthMessage("");
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (error) {
+          setAuthMessage(error.message, "error");
+        } finally {
+          setAuthBusy(false);
+        }
+      }
+
+      document.getElementById("google-sign-in").addEventListener("click", () => {
+        signInWithProvider(googleProvider);
+      });
+      document.getElementById("github-sign-in").addEventListener("click", () => {
+        signInWithProvider(githubProvider);
+      });
+
+      document.getElementById("resend-verification").addEventListener("click", async () => {
+        setAuthBusy(true);
+        try {
+          if (!auth.currentUser) {
+            throw new Error("Sign in again to resend the verification email.");
+          }
+          await sendEmailVerification(auth.currentUser);
+          setAuthMessage("A new verification email has been sent.", "success");
+        } catch (error) {
+          setAuthMessage(error.message, "error");
+        } finally {
+          setAuthBusy(false);
+        }
+      });
+
+      document.getElementById("check-verification").addEventListener("click", async () => {
+        setAuthBusy(true);
+        try {
+          if (!auth.currentUser) {
+            throw new Error("Your session has expired. Sign in again.");
+          }
+          await reload(auth.currentUser);
+          if (!auth.currentUser.emailVerified) {
+            setAuthMessage("Your email is not verified yet. Check your inbox and try again.", "error");
+            return;
+          }
+          setAuthMessage("");
+          await showProfileOrApp(auth.currentUser);
+        } catch (error) {
+          setAuthMessage(error.message, "error");
+        } finally {
+          setAuthBusy(false);
+        }
+      });
+
+      profileForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        setAuthBusy(true);
+        setAuthMessage("");
+        try {
+          const user = auth.currentUser;
+          if (!user || !user.email) {
+            throw new Error("No email address is available for this account. Sign out and use an account with an email address.");
+          }
+          const formData = new FormData(profileForm);
+          const name = formData.get("name").trim();
+          const profileReference = doc(database, "userProfiles", user.uid);
+          const profileSnapshot = await getDoc(profileReference);
+          const profile = {
+            name,
+            email: user.email,
+            telephone: formData.get("telephone").trim(),
+            mobile: formData.get("mobile").trim(),
+            updatedAt: serverTimestamp()
+          };
+          if (!profileSnapshot.exists()) {
+            profile.createdAt = serverTimestamp();
+          }
+          await setDoc(profileReference, profile, { merge: true });
+          await updateProfile(user, { displayName: name });
+          await showProfileOrApp(user);
+          setAuthMessage("");
+        } catch (error) {
+          setAuthMessage(error.message, "error");
+        } finally {
+          setAuthBusy(false);
+        }
+      });
+
+      async function logOut() {
+        if (window.guestModeActive) {
+          window.exitGuestMode();
+          return;
+        }
+        try {
+          await signOut(auth);
+          appContent.hidden = true;
+          authView.hidden = false;
+          setAuthMessage("");
+        } catch (error) {
+          setAuthMessage(error.message, "error");
+        }
+      }
+
+      document.getElementById("logout-button").addEventListener("click", logOut);
+      document.getElementById("verification-logout").addEventListener("click", logOut);
+      document.getElementById("profile-logout").addEventListener("click", logOut);
+
+      onAuthStateChanged(auth, user => {
+        if (window.guestModeActive) {
+          return;
+        }
+        if (!user) {
+          appContent.hidden = true;
+          authView.hidden = false;
+          showAuthScreen("login");
+          return;
+        }
+        showProfileOrApp(user);
+      }, error => {
+        setAuthMessage(error.message, "error");
+      });
+    }
+  </script>
+</body>
+</html>
